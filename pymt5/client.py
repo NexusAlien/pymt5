@@ -56,7 +56,7 @@ from pymt5.constants import (
     PROP_U64,
 )
 from pymt5.events import HealthStatus
-from pymt5.exceptions import PyMT5Error, SessionError, ValidationError
+from pymt5.exceptions import AuthenticationError, PyMT5Error, SessionError, ValidationError
 from pymt5.helpers import build_client_id, bytes_to_hex
 from pymt5.protocol import SeriesCodec
 from pymt5.transport import CommandResult, MT5WebSocketTransport
@@ -474,6 +474,12 @@ class MT5WebClient(_PushHandlersMixin, _AccountMixin, _MarketDataMixin, _Trading
             utm_source=utm_source,
         )
         result = await self.transport.send_command(CMD_LOGIN, payload)
+        if result.code != 0:
+            raise AuthenticationError(f"MT5 Web Terminal rejected login (response code {result.code})")
+        if len(result.body) < 168:
+            raise AuthenticationError(
+                f"MT5 Web Terminal returned an incomplete login response ({len(result.body)} bytes)"
+            )
         token_bytes, session_id = SeriesCodec.parse(result.body, LOGIN_RESPONSE_SCHEMA)
         self._logged_in = True
         # Store credentials for potential reconnect

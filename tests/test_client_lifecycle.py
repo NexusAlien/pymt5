@@ -14,7 +14,7 @@ import pytest
 
 from pymt5.client import MT5WebClient
 from pymt5.constants import CMD_LOGIN, CMD_LOGOUT, CMD_PING
-from pymt5.exceptions import MT5ConnectionError, SessionError
+from pymt5.exceptions import AuthenticationError, MT5ConnectionError, SessionError
 from pymt5.transport import CommandResult
 
 # ---------------------------------------------------------------------------
@@ -653,6 +653,16 @@ async def test_login_stores_credentials():
     assert client._login_kwargs["login"] == 999
     assert client._login_kwargs["password"] == "pw123"
     assert client._login_kwargs["url"] == "https://example.com"
+
+
+async def test_login_rejection_reports_response_code_without_parsing_empty_body():
+    client = MT5WebClient()
+    client.transport.send_command = AsyncMock(
+        return_value=CommandResult(command=CMD_LOGIN, code=3, body=b""),
+    )
+    with pytest.raises(AuthenticationError, match="response code 3"):
+        await client.login(login=999, password="invalid", auto_heartbeat=False)
+    assert client._logged_in is False
 
 
 # ---------------------------------------------------------------------------

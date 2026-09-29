@@ -547,20 +547,33 @@ def _parse_rate_bars(body: bytes | None) -> RecordList:
         return []
     bar_size_std = get_series_size(RATE_BAR_SCHEMA)
     bar_size_ext = get_series_size(RATE_BAR_SCHEMA_EXT)
-    if len(body) % bar_size_ext == 0 and bar_size_ext != bar_size_std:
-        schema, names, bar_size = RATE_BAR_SCHEMA_EXT, RATE_BAR_FIELD_NAMES_EXT, bar_size_ext
-    else:
-        schema, names, bar_size = RATE_BAR_SCHEMA, RATE_BAR_FIELD_NAMES, bar_size_std
-    count = len(body) // bar_size
-    bars = []
-    offset = 0
-    for _ in range(count):
-        if offset + bar_size > len(body):
-            break
-        vals = SeriesCodec.parse_at(body, schema, offset)
-        bars.append(dict(zip(names, vals)))
-        offset += bar_size
-    return bars
+    def parse(schema, names, bar_size):
+        return [
+            dict(zip(names, SeriesCodec.parse_at(body, schema, offset)))
+            for offset in range(0, len(body) - bar_size + 1, bar_size)
+        ]
+
+    standard = len(body) % bar_size_std == 0
+    extended = bar_size_ext != bar_size_std and len(body) % bar_size_ext == 0
+    if extended and not standard:
+        return parse(RATE_BAR_SCHEMA_EXT, RATE_BAR_FIELD_NAMES_EXT, bar_size_ext)
+
+    bars = parse(RATE_BAR_SCHEMA, RATE_BAR_FIELD_NAMES, bar_size_std)
+    if not extended:
+        return bars
+
+    # Multiples of 336 bytes fit both 48-byte and 56-byte records.  Check the
+    # bar chronology before choosing: interpreting standard bars as extended
+    # records produces bogus (often zero) timestamps and destroys ordering.
+    extended_bars = parse(RATE_BAR_SCHEMA_EXT, RATE_BAR_FIELD_NAMES_EXT, bar_size_ext)
+
+    def chronology_score(records):
+        times = [bar["time"] for bar in records]
+        positive = sum(value > 0 for value in times)
+        ascending = sum(0 < earlier < later for earlier, later in zip(times, times[1:]))
+        return (ascending / max(1, len(times) - 1), positive / len(times))
+
+    return extended_bars if chronology_score(extended_bars) > chronology_score(bars) else bars
 
 
 def _parse_counted_records(

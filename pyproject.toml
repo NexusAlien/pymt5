@@ -54,10 +54,10 @@ pandas = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/cloudQuant/pymt5"
+Homepage = "https://github.com/NexusAlien/pymt5"
 Documentation = "https://pymt5.readthedocs.io"
-Repository = "https://github.com/cloudQuant/pymt5"
-Issues = "https://github.com/cloudQuant/pymt5/issues"
+Repository = "https://github.com/NexusAlien/pymt5"
+Issues = "https://github.com/NexusAlien/pymt5/issues"
 
 [tool.setuptools.packages.find]
 include = ["pymt5*"]

@@ -56,13 +56,13 @@ Installation
 
 .. code-block:: bash
 
-   pip install pymt5
+   pip install git+https://github.com/NexusAlien/pymt5.git
 
 Or install from source:
 
 .. code-block:: bash
 
-   git clone https://github.com/cloudQuant/pymt5.git
+   git clone https://github.com/NexusAlien/pymt5.git
    cd pymt5
    pip install -e .
 

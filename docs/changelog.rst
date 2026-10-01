@@ -1,6 +1,19 @@
 Changelog
 =========
 
+Unreleased
+----------
+
+- Send a browser-compatible User-Agent during WebSocket connection setup for
+  Web Terminal gateways that reject the default Python client identity.
+- Report rejected Web Terminal logins as authentication errors.
+- Disambiguate standard and extended historical rate bars by chronology.
+
+v1.0.1 (2026-04-02)
+--------------------
+
+- Fixed tick price normalization and partial tick update merging.
+
 v1.0.0 (2026-03-21)
 --------------------
 

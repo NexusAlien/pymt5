@@ -1,12 +1,14 @@
 # pymt5
 
-[![CI](https://github.com/cloudQuant/pymt5/actions/workflows/ci.yml/badge.svg)](https://github.com/cloudQuant/pymt5/actions/workflows/ci.yml)
+[![CI](https://github.com/NexusAlien/pymt5/actions/workflows/ci.yml/badge.svg)](https://github.com/NexusAlien/pymt5/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue)](https://www.python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![Documentation](https://readthedocs.org/projects/pymt5/badge/?version=latest)](https://pymt5.readthedocs.io/en/latest/)
-[![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey)](https://github.com/cloudQuant/pymt5)
+[![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey)](https://github.com/NexusAlien/pymt5)
 
 Python client for the MT5 Web Terminal via reverse-engineered WebSocket binary protocol.
+
+See the [changelog](docs/changelog.rst) for releases and subsequent changes.
 
 ## Requirements
 
@@ -121,13 +123,13 @@ Live-verified against MetaQuotes-Demo on 2026-03-16. The current official Web Te
 ## Install
 
 ```bash
-pip install pymt5
+pip install git+https://github.com/NexusAlien/pymt5.git
 ```
 
 Or install from source:
 
 ```bash
-git clone https://github.com/cloudQuant/pymt5.git
+git clone https://github.com/NexusAlien/pymt5.git
 cd pymt5
 pip install -e .
 ```

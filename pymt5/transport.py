@@ -2,6 +2,7 @@ import asyncio
 import contextlib
 import enum
 import inspect as _inspect
+import ssl
 import struct
 import time
 import traceback
@@ -109,6 +110,7 @@ class MT5WebSocketTransport:
             "ping_interval": None,
             "max_size": None,
             "open_timeout": self.timeout,
+            "ssl": ssl.create_default_context(),
             # Some Web Terminal gateways reject the default Python client identity.
             "user_agent_header": _WEB_TERMINAL_USER_AGENT,
             "additional_headers": {

@@ -5,6 +5,7 @@ and _dispatch() with push listeners -- all via mocks (no real WebSocket).
 """
 
 import asyncio
+import ssl
 import struct
 from collections import deque
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -103,8 +104,13 @@ class TestConnect:
 
         mock_ws = _make_mock_ws(messages=[response_bytes])
 
-        with patch("pymt5.transport.websockets.connect", new_callable=AsyncMock, return_value=mock_ws):
+        with patch("pymt5.transport.websockets.connect", new_callable=AsyncMock, return_value=mock_ws) as connect:
             await t.connect()
+
+        tls = connect.call_args.kwargs["ssl"]
+        assert isinstance(tls, ssl.SSLContext)
+        assert tls.verify_mode == ssl.CERT_REQUIRED
+        assert tls.check_hostname
 
         assert t.is_ready is True
         assert t.token == b"\xab" * DEFAULT_TOKEN_LENGTH
